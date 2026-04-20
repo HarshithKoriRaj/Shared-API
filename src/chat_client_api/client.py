@@ -3,6 +3,23 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
+
+
+class ChatError(Exception):
+    """Base exception for all chat client errors."""
+
+
+class ChannelNotFoundError(ChatError):
+    """Raised when a channel cannot be found."""
+
+
+class MessageNotFoundError(ChatError):
+    """Raised when a message cannot be found."""
+
+
+class MessageDeleteError(ChatError):
+    """Raised when a message cannot be deleted."""
 
 
 @dataclass
@@ -13,7 +30,7 @@ class Message:
     channel: str      # channel_id the message belongs to
     text: str
     sender: str
-    timestamp: str
+    timestamp: datetime  # timezone-aware datetime
 
 
 @dataclass
@@ -62,7 +79,7 @@ class ChatClient(ABC):
             Channel object.
 
         Raises:
-            ValueError: If the channel is not found.
+            ChannelNotFoundError: If the channel is not found.
 
         """
 
@@ -99,7 +116,7 @@ class ChatClient(ABC):
             Message object.
 
         Raises:
-            ValueError: If the message is not found.
+            MessageNotFoundError: If the message is not found.
 
         """
 
@@ -113,7 +130,7 @@ class ChatClient(ABC):
                 for Slack, ``"chat_id:message_id"`` for Telegram).
 
         Raises:
-            ValueError: If the message cannot be deleted or is not found.
+            MessageDeleteError: If the message cannot be deleted or is not found.
 
         """
 
